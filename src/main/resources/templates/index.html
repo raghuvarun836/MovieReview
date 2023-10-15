@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recently Released Movies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        ul {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Three columns */
+            grid-gap: 20px; /* Gap between items */
+            padding: 20px;
+            margin: 0; /* Remove the margin to prevent spacing on the left */
+        }
+
+        li {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 0;
+        }
+
+        .movie-icon {
+            font-size: 24px;
+            color: #007bff;
+            margin-right: 20px;
+        }
+
+        .movie-details {
+            display: flex;
+            align-items: center;
+        }
+
+        .movie-title {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .movie-info {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+
+        .release-date,
+        .movie-description {
+            font-size: 16px;
+            margin-right: 20px;
+        }
+
+        .release-date {
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Recently Released Movies</h1>
+    </header>
+
+    <ul>
+        <li th:each="movie : ${recentlyReleasedMovies}">
+            <div class="movie-details">
+                <i class="fas fa-film movie-icon"></i>
+                <div class="movie-title" th:text="${movie.title}"></div>
+            </div>
+            <div class="movie-info">
+                <p class="release-date" th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
+                <p class="movie-description" th:text="${movie.description}"></p>
+            </div>
+        </li>
+    </ul>
+    <a href="/login" style="padding-left: 20px;">Click here to login and post a Review</a>
+</body>
+</html>
