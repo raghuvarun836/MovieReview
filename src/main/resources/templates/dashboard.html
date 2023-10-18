@@ -1,35 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <title>User Dashboard</title>
-    <style>
-        /* Add your CSS styles here */
-    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Select2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
 </head>
 <body>
-    <header>
-        <h1>User Dashboard</h1>
-    </header>
+    <form th:action="@{/submitReview}" method="post">
     <div class="container">
-        <table>
-            <tr>
-                <th>Movie Title</th>
-                <th>Action</th>
-            </tr>
-            <tr th:each="movie : ${movies}">
-                <td th:text="${movie.title}"></td>
-                <td>
-                    <form th:action="@{/submitReview}" method="post">
-                        <input type="hidden" name="movieId" th:value="${movie.id}" />
-                        <label for="rating">Rating (1-5):</label>
-                        <input type="number" id="rating" name="rating" min="1" max="5" />
-                        <label for="comment">Review:</label>
-                        <textarea id="comment" name="comment" rows="4" cols="50"></textarea>
-                        <button type="submit">Submit Review</button>
-                    </form>
-                </td>
-            </tr>
-        </table>
+        <h1>Movie Review Form</h1>
+
+        <div class="form-group">
+            <label for="movieSelect">Select a Movie:</label>
+            <select class="form-control" id="movieSelect" name="movieId">
+                <option value="">Select a Movie</option>
+                <option th:each="movie : ${movies}" th:value="${movie.id}" th:text="${movie.title + ' (' + #dates.format(movie.releaseDate, 'yyyy') + ')'}")></option>
+            </select>
+        </div>
+
+        <div class="movie-form" style="display: none;">
+            <div class="form-group">
+                <label for="rating">Rating (1-5):</label>
+                <input type="number" class="form-control" id="rating" name="rating" min="1" max="5">
+            </div>
+            <div class="form-group">
+                <label for="comment">Review:</label>
+                <textarea class="form-control" id="comment" name="comment" rows="4" cols="50"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="submitReviewBtn">Submit Review</button>
+        </div>
     </div>
+</form>
+
+
+    <!-- Include jQuery and Select2 JavaScript libraries -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialize Select2 for the movie selection dropdown
+            $('#movieSelect').select2();
+
+            $('#movieSelect').on('select2:select', function () {
+                $('.movie-form').show();
+            });
+
+            $('#submitReviewBtn').click(function (e) {
+                // Check if rating and comment are not empty
+                const rating = $('#rating').val();
+                const comment = $('#comment').val();
+                if (rating === '' || comment === '') {
+                    alert('Please fill out both rating and comment.');
+                    e.preventDefault(); // Prevent form submission
+                }
+            });
+        });
+    </script>
 </body>
 </html>

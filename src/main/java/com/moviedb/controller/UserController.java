@@ -96,9 +96,10 @@ public class UserController {
     @GetMapping("/userDashboard")
     public String userDashboard(Model model) {
         List<Movie> movies = movieRepository.findAll();
-        for(Movie m : movies) {
-        	System.out.println(m.getId()+" "+m.getTitle()+" "+m.getDescription());
-        }
+        //printing Movies for verifying
+//        for(Movie m : movies) {
+//        	System.out.println(m.getId()+" "+m.getTitle()+" "+m.getDescription());
+//        }
         model.addAttribute("movies", movies);
         return "dashboard";
     }
@@ -110,17 +111,29 @@ public class UserController {
         @RequestParam("comment") String comment,
         HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        // Create a new Review object
-        Review review = new Review();
-        review.setMovie(movieRepository.findById(movieId).orElse(null));
-        review.setUser(userRepository.findById(userId).orElse(null));
-        review.setRating(rating);
-        review.setComment(comment);
 
-        // Save the review to the database
-        reviewRepository.save(review);
+        // Check if a review already exists for this movie and user
+        Review existingReview = reviewRepository.findByMovieIdAndUserId(movieId, userId);
+
+        if (existingReview != null) {
+            // Review already exists, update it
+            existingReview.setRating(rating);
+            existingReview.setComment(comment);
+            reviewRepository.save(existingReview);
+        } else {
+            // Create a new Review object
+            Review newReview = new Review();
+            newReview.setMovie(movieRepository.findById(movieId).orElse(null));
+            newReview.setUser(userRepository.findById(userId).orElse(null));
+            newReview.setRating(rating);
+            newReview.setComment(comment);
+
+            // Save the new review to the database
+            reviewRepository.save(newReview);
+        }
 
         return "redirect:/userDashboard";
     }
+
 
 }

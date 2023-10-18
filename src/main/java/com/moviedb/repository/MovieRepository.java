@@ -16,6 +16,6 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long>{
 
-	List<Movie> findTop5ByOrderByReleaseDateDesc();
+	List<Movie> findTop10ByOrderByReleaseDateDesc();
 
 }

@@ -12,5 +12,7 @@ import jakarta.transaction.Transactional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Long>{
+
+	Review findByMovieIdAndUserId(Long movieId, Long userId);
 	
 }
