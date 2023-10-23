@@ -28,13 +28,13 @@ public class UserController {
     private ReviewRepository reviewRepository;
     
     
-    @GetMapping("/login")
+    @GetMapping("/userLogin")
     public String showLoginForm(Model model) {
         // Add any required model attributes for the login form
         return "login_signup"; // This should match the Thymeleaf template name
     }
 
-    @PostMapping("/login")
+    @PostMapping("/userLogin")
     public String login(@RequestParam("email") String email, @RequestParam("password") String password, Model model, HttpSession session) {
         // Retrieve the user from the repository based on the email
         User user = userRepository.findByEmail(email);
@@ -101,7 +101,7 @@ public class UserController {
 //        	System.out.println(m.getId()+" "+m.getTitle()+" "+m.getDescription());
 //        }
         model.addAttribute("movies", movies);
-        return "dashboard";
+        return "userDashboard";
     }
 
     @PostMapping("/submitReview")

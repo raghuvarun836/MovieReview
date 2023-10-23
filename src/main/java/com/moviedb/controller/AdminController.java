@@ -1,6 +1,6 @@
 package com.moviedb.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Autowired; 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,13 +41,16 @@ public class AdminController
     }
 	
 	@GetMapping("/addMovie")
-    public String showAddMovieForm() {
+    public String showAddMovieForm(Model model)
+	{
         return "addMovie";
     }
 
-    @PostMapping("/addMovie")
-    public String addMovie(@ModelAttribute Movie movie) {
-    	movieRepository.save(movie);
-    	return "adminDashboard";
+	@PostMapping("/addMovie")
+    public String addMovie(@ModelAttribute("movie") Movie movie) {    
+        // Save the movie to the database
+        movieRepository.save(movie);
+        
+        return "adminDashboard";
     }
 }
