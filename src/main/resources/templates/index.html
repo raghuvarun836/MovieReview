@@ -12,7 +12,7 @@
         }
 
         .movie-image {
-            height: 300px;
+            height: 250px;
         }
 
         .release-date {
@@ -29,7 +29,7 @@
 
     <div class="container-sm mt-4">
         <div class="row">
-            <div th:each="movie : ${recentlyReleasedMovies}" class="col-lg-4 mb-4">
+            <div th:each="movie : ${recentlyReleasedMovies}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
                 <div class="card">
                     <!-- Add an image for the movie -->
                     <img th:if="${movie.image != null}" th:src="'data:image/jpeg;base64,' + ${#strings.toString(movie.image)}" class="card-img-top movie-image" alt="Movie Image">
