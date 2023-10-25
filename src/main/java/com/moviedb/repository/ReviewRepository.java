@@ -1,5 +1,7 @@
 package com.moviedb.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,5 +16,7 @@ import jakarta.transaction.Transactional;
 public interface ReviewRepository extends JpaRepository<Review, Long>{
 
 	Review findByMovieIdAndUserId(Long movieId, Long userId);
+
+	List<Review> findByUserId(Long userId);
 	
 }

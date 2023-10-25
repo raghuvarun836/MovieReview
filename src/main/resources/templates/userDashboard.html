@@ -57,6 +57,27 @@
             <div class="tab-pane fade" id="my-reviews">
                 <h3>My Reviews Tab</h3>
                 <!-- Add your content for the My Reviews tab here -->
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Movie Title</th>
+                            <th>Rating</th>
+                            <th>Review</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="review : ${reviews}">
+                            <td th:text="${review.movie.getTitle()}"></td>
+                            <td th:text="${review.rating}"></td>
+                            <td th:text="${review.comment}"></td>
+                            <td>
+                                <button class="btn btn-primary btn-sm edit-review">Edit</button>
+                                <button class="btn btn-danger btn-sm delete-review">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="tab-pane fade" id="profile">
                 <h3>Profile Tab</h3>
@@ -86,6 +107,17 @@
                     alert('Please fill out both rating and comment.');
                     e.preventDefault(); // Prevent form submission
                 }
+            });
+
+            // Edit and Delete buttons functionality
+            $('.edit-review').click(function () {
+                // Implement edit review functionality here
+                alert('Edit review clicked');
+            });
+
+            $('.delete-review').click(function () {
+                // Implement delete review functionality here
+                alert('Delete review clicked');
             });
         });
     </script>

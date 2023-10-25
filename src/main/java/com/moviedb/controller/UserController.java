@@ -94,13 +94,13 @@ public class UserController {
     }
 
     @GetMapping("/userDashboard")
-    public String userDashboard(Model model) {
+    public String userDashboard(Model model,HttpSession session) {
         List<Movie> movies = movieRepository.findAll();
-//        printing Movies for verifying
-//        for(Movie m : movies) {
-//        	System.out.println(m.getId()+" "+m.getTitle()+" "+m.getDescription());
-//        }
         model.addAttribute("movies", movies);
+        
+        Long userId = (Long) session.getAttribute("userId");
+        List<Review> reviews=reviewRepository.findByUserId(userId);
+        model.addAttribute("reviews", reviews);
         return "userDashboard";
     }
 
