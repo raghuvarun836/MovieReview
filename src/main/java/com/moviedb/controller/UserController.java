@@ -1,6 +1,7 @@
 package com.moviedb.controller;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,13 +95,32 @@ public class UserController {
     }
 
     @GetMapping("/userDashboard")
-    public String userDashboard(Model model,HttpSession session) {
-        List<Movie> movies = movieRepository.findAll();
-        model.addAttribute("movies", movies);
-        
+    public String userDashboard(Model model, HttpSession session,
+                                @RequestParam(name = "page", required = false, defaultValue = "1") int page) {
+        int pageSize = 8; // Number of movies to display per page
         Long userId = (Long) session.getAttribute("userId");
-        List<Review> reviews=reviewRepository.findByUserId(userId);
+
+        List<Movie> allMovies = movieRepository.findAll();
+        int totalMovies = allMovies.size();
+
+        // Calculate the total number of pages
+        int totalPages = (int) Math.ceil((double) totalMovies / pageSize);
+
+        // Determine the movies for the current page
+        List<Movie> currentPageMovies = allMovies
+                .stream()
+                .skip((page - 1) * pageSize)
+                .limit(pageSize)
+                .collect(Collectors.toList());
+
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+
+        model.addAttribute("movies", currentPageMovies);
         model.addAttribute("reviews", reviews);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPage", totalPages);
+        model.addAttribute("userId", userId);
+
         return "userDashboard";
     }
 
@@ -135,4 +155,25 @@ public class UserController {
         return "redirect:/userDashboard";
     }
     
+    
+    @PostMapping("/editReview")
+    public String editReview(
+        @RequestParam("movieId") Long movieId,
+        @RequestParam("reviewId") Long reviewId,
+        @RequestParam("rating") int rating,
+        @RequestParam("comment") String comment,
+        HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+
+        // Check if the review exists and belongs to the current user
+        Review existingReview = reviewRepository.findById(reviewId).orElse(null);
+        if (existingReview != null && existingReview.getUser().getId().equals(userId)) {
+            // Update the existing review
+            existingReview.setRating(rating);
+            existingReview.setComment(comment);
+            reviewRepository.save(existingReview);
+        }
+
+        return "redirect:/userDashboard";
+    }
 }

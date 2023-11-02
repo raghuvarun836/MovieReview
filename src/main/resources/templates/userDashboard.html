@@ -1,11 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>User Dashboard</title>
     <!-- Add Bootstrap CSS link -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Include Select2 CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	
+	<style>
+		.card {
+            margin-bottom: 20px;
+        }
+
+        .movie-image {
+            height: 250px;
+        }
+
+        .release-date {
+            font-style: italic;
+        }
+	    .movie-container {
+	        transition: transform 0.2s;
+	    }
+	
+	    .movie-container:hover {
+	        transform: scale(1.1);
+	    }
+
+        /* Improved styling for user reviews */
+        .user-review {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .user-review h5 {
+            margin: 0;
+        }
+        
+	</style>
+	
 </head>
 <body>
     <div class="container mt-4">
@@ -28,61 +69,166 @@
 
         <div class="tab-content mt-3">
             <div class="tab-pane fade show active" id="home">
-                <form th:action="@{/submitReview}" method="post">
-                    <div class="container">
-                        <h3>Movie Review Form</h3>
+			    <div class="container">
+			        <h3>Movie Review Form</h3>
+			        <div class="row">
+			            <!-- Loop through the list of movies and display them as clickable containers -->
+			            <div th:each="movie : ${movies}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
+			                <!-- Use a div as the movie container with a data-toggle attribute -->
+			                <div class="movie-container" data-toggle="modal" th:data-target="'#movieModal-' + ${movie.id}">
+			                    <div class="card">
+			                        <img th:src="${movie.image}" class="card-img-top movie-image" alt="Movie Poster">
+			                        <div class="card-body">
+			                            <h5 class="card-title" th:text="${movie.title}"></h5>
+			                            <p class="card-text" th:text="${'Rating: ' + movie.calculateAverageRating()}"></p>
+			                            <p class="release-date" th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
+			                            <p class="movie-description" th:text="${movie.description}"></p>
+			                        </div>
+			                    </div>
+			                </div>
+			            </div>
+			        </div>
+			        
+			        <!-- Dynamic pagination controls for movie boxes -->
+			        <nav>
+			            <ul class="pagination">
+			                <li th:if="${currentPage > 1}" class="page-item">
+			                    <a th:href="@{/userDashboard(page=1)}" class="page-link" aria-label="First">
+			                        <span aria-hidden="true">&laquo;&laquo;</span>
+			                    </a>
+			                </li>
+			                <li th:if="${currentPage > 1}" class="page-item">
+			                    <a th:href="@{/userDashboard(page=${currentPage - 1})}" class="page-link" aria-label="Previous">
+			                        <span aria-hidden="true">&laquo;</span>
+			                    </a>
+			                </li>
+			                <li th:each="page : ${#numbers.sequence(1, totalPage)}" th:classappend="${page} == ${currentPage} ? 'active'">
+			                    <a th:href="@{/userDashboard(page=${page})}" class="page-link" th:text="${page}"></a>
+			                </li>
+			                <li th:if="${currentPage < totalPage}" class="page-item">
+			                    <a th:href="@{/userDashboard(page=${currentPage + 1})}" class="page-link" aria-label="Next">
+			                        <span aria-hidden="true">&raquo;</span>
+			                    </a>
+			                </li>
+			                <li th:if="${currentPage < totalPage}" class="page-item">
+			                    <a th:href="@{/userDashboard(page=${totalPage})}" class="page-link" aria-label="Last">
+			                        <span aria-hidden="true">&raquo;&raquo;</span>
+			                    </a>
+			                </li>
+			            </ul>
+			        </nav>
+			    </div>
+			</div>
+			
+            <div th:each="movie : ${movies}">
+			    <div class="modal fade" th:id="'movieModal-' + ${movie.id}" tabindex="-1" role="dialog" aria-labelledby="movieModalLabel" aria-hidden="true">
+				    <div class="modal-dialog modal-lg" role="document">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <h5 class="modal-title" th:text="${movie.title}" id="movieModalLabel"></h5>
+				                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				                    <span aria-hidden="true">&times;</span>
+				                </button>
+				            </div>
+				            <div class="modal-body">
+				                <!-- Display movie details -->
+				                <div class="text-center">
+				                    <img th:src="${movie.image}" class="card-img-top movie-image" alt="Movie Poster">
+				                    <p th:text="${'Rating: ' + movie.calculateAverageRating()}"></p>
+				                    <p th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
+				                    <p th:text="${movie.description}"></p>
+				                </div>
+				                <!-- Check if the current user has reviewed the movie -->
+								<div th:if="${movie.isUserReviewed(userId)}">
+								    <form th:action="@{/editReview}" method="post">
+								        <input type="hidden" name="movieId" th:value="${movie.id}">
+								        <input type="hidden" name="reviewId" th:value="${movie.getUserReviewId(userId)}">
+								        <div class="form-group">
+								            <label for="rating">Edit Rating:</label>
+								            <input type="number" class="form-control" id="rating" name="rating" th:value="${movie.getUserReviewRating(userId)}" required>
+								        </div>
+								        <div class="form-group">
+								            <label for="comment">Edit Review:</label>
+								            <textarea class="form-control" id="comment" name="comment" rows="3" th:text="${movie.getUserReviewComment(userId)}" required></textarea>
+								        </div>
+								        <button type="submit" class="btn btn-primary">Save Review</button>
+								    </form>
+								</div>
+								
+								<div th:unless="${movie.isUserReviewed(userId)}">
+								    <!-- Add a form to allow the logged-in user to rate and review the movie -->
+								    <form th:action="@{/submitReview}" method="post">
+								        <input type="hidden" name="movieId" th:value="${movie.id}">
+								        <div class="form-group">
+								            <label for="rating">Rating:</label>
+								            <input type="number" class="form-control" id="rating" name="rating" required>
+								        </div>
+								        <div class="form-group">
+								            <label for="comment">Review:</label>
+								            <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+								        </div>
+								        <button type="submit" class="btn btn-primary">Submit Review</button>
+								    </form>
+								</div>
 
-                        <div class="form-group">
-                            <label for="movieSelect">Select a Movie:</label>
-                            <select class="form-control" id="movieSelect" name="movieId">
-                                <option value="">Select a Movie</option>
-                                <option th:each="movie : ${movies}" th:value="${movie.id}" th:text="${movie.title + ' (' + #dates.format(movie.releaseDate, 'yyyy') + ')'}"></option>
-                            </select>
-                        </div>
-
-                        <div class="movie-form" style="display: none;">
-                            <div class="form-group">
-                                <label for="rating">Rating (1-5):</label>
-                                <input type="number" class="form-control" id="rating" name="rating" min="1" max="5">
-                            </div>
-                            <div class="form-group">
-                                <label for="comment">Review:</label>
-                                <textarea class="form-control" id="comment" name="comment" rows="4" cols="50"></textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary" id="submitReviewBtn">Submit Review</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+				                
+				                <!-- Display reviews for the selected movie -->
+				                <h3 class="mt-4">User Reviews</h3>
+				                <div class="list-group">
+				                    <!-- Loop through and display reviews by different users -->
+				                    <div th:each="review : ${movie.reviews}" class="list-group-item user-review">
+				                        <h5 class="mb-1" th:text="${review.user.name}"></h5>
+				                        <p class="mb-1" th:text="'Rating: ' + ${review.rating}"></p>
+				                        <p class="mb-1" th:text="'Review: ' + ${review.comment}"></p>
+				                    </div>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+			</div>
+            
+            <!-- My Reviews tab -->
             <div class="tab-pane fade" id="my-reviews">
-                <h3>My Reviews Tab</h3>
-                <!-- Add your content for the My Reviews tab here -->
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Movie Title</th>
-                            <th>Rating</th>
-                            <th>Review</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="review : ${reviews}">
-                            <td th:text="${review.movie.getTitle()}"></td>
-                            <td th:text="${review.rating}"></td>
-                            <td th:text="${review.comment}"></td>
-                            <td>
-                                <button class="btn btn-primary btn-sm edit-review">Edit</button>
-                                <button class="btn btn-danger btn-sm delete-review">Delete</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="container">
+                    <h3>My Reviews Tab</h3>
+                    <!-- Add your content for the My Reviews tab here -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Movie Title</th>
+                                <th>Rating</th>
+                                <th>Review</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="review : ${reviews}">
+                                <td th:text="${review.movie.title}"></td>
+                                <td th:text="${review.rating}"></td>
+                                <td th:text="${review.comment}"></td>
+                                <td>
+                                    <a href="#" data-toggle="modal" data-target="#editReviewModal" class="edit-review-icon" th:data-review-id="${review.id}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" data-toggle="modal" data-target="#deleteReviewModal" class="delete-review-icon" th:data-review-id="${review.id}">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            
+            <!-- Profile tab -->
             <div class="tab-pane fade" id="profile">
-                <h3>Profile Tab</h3>
-                <!-- Add your content for the Profile tab here -->
+                <div class="container">
+                    <h3>Profile Tab</h3>
+                    <!-- Add your content for the Profile tab here -->
+                </div>
             </div>
+            
         </div>
     </div>
 
@@ -90,36 +236,6 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Initialize Select2 for the movie selection dropdown
-            $('#movieSelect').select2();
-
-            $('#movieSelect').on('select2:select', function () {
-                $('.movie-form').show();
-            });
-
-            $('#submitReviewBtn').click(function (e) {
-                // Check if rating and comment are not empty
-                const rating = $('#rating').val();
-                const comment = $('#comment').val();
-                if (rating === '' || comment === '') {
-                    alert('Please fill out both rating and comment.');
-                    e.preventDefault(); // Prevent form submission
-                }
-            });
-
-            // Edit and Delete buttons functionality
-            $('.edit-review').click(function () {
-                // Implement edit review functionality here
-                alert('Edit review clicked');
-            });
-
-            $('.delete-review').click(function () {
-                // Implement delete review functionality here
-                alert('Delete review clicked');
-            });
-        });
-    </script>
+    
 </body>
 </html>
