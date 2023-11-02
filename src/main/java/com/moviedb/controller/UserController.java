@@ -176,4 +176,15 @@ public class UserController {
 
         return "redirect:/userDashboard";
     }
+    
+    @GetMapping("/deleteReview/{reviewId}")
+    public String deleteReview(@PathVariable Long reviewId) {
+        // Fetch the review from the database and perform validation if needed
+        Review review = reviewRepository.findById(reviewId).orElse(null);
+        if (review != null) {
+            // Delete the review from the database
+            reviewRepository.delete(review);
+        }
+        return "redirect:/userDashboard";
+    }
 }

@@ -190,37 +190,55 @@
             
             <!-- My Reviews tab -->
             <div class="tab-pane fade" id="my-reviews">
-                <div class="container">
-                    <h3>My Reviews Tab</h3>
-                    <!-- Add your content for the My Reviews tab here -->
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Movie Title</th>
-                                <th>Rating</th>
-                                <th>Review</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="review : ${reviews}">
-                                <td th:text="${review.movie.title}"></td>
-                                <td th:text="${review.rating}"></td>
-                                <td th:text="${review.comment}"></td>
-                                <td>
-                                    <a href="#" data-toggle="modal" data-target="#editReviewModal" class="edit-review-icon" th:data-review-id="${review.id}">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a href="#" data-toggle="modal" data-target="#deleteReviewModal" class="delete-review-icon" th:data-review-id="${review.id}">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            
+			    <div class="container">
+			        <h3>My Reviews Tab</h3>
+			        <!-- Add your content for the My Reviews tab here -->
+			        <table class="table">
+			            <thead>
+			                <tr>
+			                    <th>Movie Title</th>
+			                    <th>Rating</th>
+			                    <th>Review</th>
+			                    <th>Action</th>
+			                </tr>
+			            </thead>
+			            <tbody>
+			                <tr th:each="review : ${reviews}">
+			                    <td th:text="${review.movie.title}"></td>
+			                    <td th:text="${review.rating}"></td>
+			                    <td th:text="${review.comment}"></td>
+			                    <td>
+			                        <a href="#" data-toggle="modal" data-target="#deleteReviewModal" class="delete-review-icon" th:data-review-id="${review.id}">
+			                            <i class="fas fa-trash-alt"></i>
+			                        </a>
+			                    </td>
+			                </tr>
+			            </tbody>
+			        </table>
+			    </div>
+			</div>
+			
+			<!-- Delete Review Modal -->
+			<div class="modal fade" id="deleteReviewModal" tabindex="-1" role="dialog" aria-labelledby="deleteReviewModalLabel" aria-hidden="true">
+			    <div class="modal-dialog" role="document">
+			        <div class="modal-content">
+			            <div class="modal-header">
+			                <h5 class="modal-title" id="deleteReviewModalLabel">Confirm Deletion</h5>
+			                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			                    <span aria-hidden="true">&times;</span>
+			                </button>
+			            </div>
+			            <div class="modal-body">
+			                Are you sure you want to delete this review?
+			            </div>
+			            <div class="modal-footer">
+			                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			                <a href="#" id="confirmDeleteReview" class="btn btn-danger">Delete</a>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+
             <!-- Profile tab -->
             <div class="tab-pane fade" id="profile">
                 <div class="container">
@@ -237,5 +255,16 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     
+    <script>
+		$(document).ready(function () {
+		    // Set the review ID when clicking the delete button in the modal
+		    $('#deleteReviewModal').on('show.bs.modal', function (event) {
+		        var button = $(event.relatedTarget); // Button that triggered the modal
+		        var reviewId = button.data('review-id'); // Extract review ID from data attribute
+		        $('#confirmDeleteReview').attr('href', '/deleteReview/' + reviewId); // Set the href attribute for the confirmation button
+		    });
+		});
+	</script>
+
 </body>
 </html>

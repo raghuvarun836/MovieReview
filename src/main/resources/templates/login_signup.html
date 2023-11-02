@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <title>Login or Signup</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Add your custom CSS for styling here -->
-    <style>
-        /* Add your custom styles here */
-    </style>
+    <!-- Add Font Awesome for eye icons -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+	
 </head>
 <body>
     <div class="container mt-5">
@@ -32,9 +31,16 @@
                                         <input type="email" class="form-control" id="email" name="email" required th:value="${param.email}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
-                                    </div>
+									    <label for="password">Password</label>
+									    <div class="input-group">
+									        <input type="password" class="form-control" id="password" name="password" required>
+									        <div class="input-group-append">
+									            <span class="input-group-text">
+									                <i class="fas fa-eye" id="password-toggle"></i>
+									            </span>
+									        </div>
+									    </div>
+									</div>
                                     <button type="submit" class="btn btn-primary">Login</button>
                                 </form>
                                 <!-- Display error message here if login fails -->
@@ -52,13 +58,27 @@
                                         <input type="email" class="form-control" id="email" name="email" required th:value="${param.email}">
                                     </div>
                                     <div class="form-group">
-                                        <label for "password">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters" required>
-                                    </div>
+									    <label for="password">Password</label>
+									    <div class="input-group">
+									        <input type="password" class="form-control" id="password" name="password" required>
+									        <div class="input-group-append">
+									            <span class="input-group-text">
+									                <i class="fas fa-eye" id="password-toggle"></i>
+									            </span>
+									        </div>
+									    </div>
+									</div>
                                     <div class="form-group">
-                                        <label for="confirmPassword">Confirm Password</label>
-                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                                    </div>
+									    <label for="confirmPassword">Password</label>
+									    <div class="input-group">
+									        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+									        <div class="input-group-append">
+									            <span class="input-group-text">
+									                <i class="fas fa-eye" id="password-toggle"></i>
+									            </span>
+									        </div>
+									    </div>
+									</div>
                                     <button type="submit" class="btn btn-primary">Signup</button>
                                 </form>
                                 <!-- Display error message here if signup fails -->
@@ -78,5 +98,23 @@
     <script th:if="${signupError}">
     	$('#signup-tab').tab('show');
 	</script>
+	<script>
+	    // JavaScript to toggle password visibility with eye/no-eye icons
+	    $(document).ready(function () {
+	        const passwordInput = $('#password');
+	        const passwordToggle = $('#password-toggle');
+	
+	        passwordToggle.click(function () {
+	            if (passwordInput.attr('type') === 'password') {
+	                passwordInput.attr('type', 'text');
+	                passwordToggle.removeClass('fa-eye').addClass('fa-eye-slash');
+	            } else {
+	                passwordInput.attr('type', 'password');
+	                passwordToggle.removeClass('fa-eye-slash').addClass('fa-eye');
+	            }
+	        });
+	    });
+	</script>
+
 </body>
 </html>

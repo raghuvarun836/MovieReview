@@ -18,7 +18,7 @@ public class HomeController {
 
 	@GetMapping("/")
     public String index(Model model) {
-        List<Movie> recentlyReleasedMovies = movieRepo.findTop10ByOrderByReleaseDateDesc();
+        List<Movie> recentlyReleasedMovies = movieRepo.findTop8ByOrderByReleaseDateDesc();
         
         model.addAttribute("recentlyReleasedMovies", recentlyReleasedMovies);
         return "index";

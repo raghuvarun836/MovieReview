@@ -18,6 +18,17 @@
         .release-date {
             font-style: italic;
         }
+        .movie-container {
+            transition: transform 0.2s;
+        }
+        .movie-container:hover {
+            transform: scale(1.1);
+        }
+        .user-review {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -30,22 +41,59 @@
     <div class="container-sm mt-4">
         <div class="row">
             <div th:each="movie : ${recentlyReleasedMovies}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                <div class="card">
-                    <!-- Add an image for the movie -->
-                    <img th:if="${movie.image != null}" th:src="'data:image/jpeg;base64,' + ${#strings.toString(movie.image)}" class="card-img-top movie-image" alt="Movie Image">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${movie.title}"></h5>
-                        <p class="card-text" th:text="${'Rating: ' + movie.calculateAverageRating()}"></p>
-                        <p class="release-date" th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
-                        <p class="movie-description" th:text="${movie.description}"></p>
+                <div class="movie-container" data-toggle="modal" th:data-target="'#movieModal-' + ${movie.id}">
+                    <div class="card">
+                        <!-- Add an image for the movie -->
+                        <img th:src="'data:image/jpeg;base64,' + ${#strings.toString(movie.image)}" class="card-img-top movie-image" alt="Movie Image">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${movie.title}"></h5>
+                            <p class="card-text" th:text="${'Rating: ' + movie.calculateAverageRating()}"></p>
+                            <p class="release-date" th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
+                            <p class="movie-description" th:text="${movie.description}"></p>
+                        </div>
                     </div>
                 </div>
+
+         		<div class="modal fade" th:id="'movieModal-' + ${movie.id}" tabindex="-1" role="dialog" aria-labelledby="movieModalLabel" aria-hidden="true">
+				    <div class="modal-dialog modal-lg" role="document">
+				        <div class="modal-content">
+				            <div class="modal-header">
+				                <h5 class="modal-title" th:text="${movie.title}" id="movieModalLabel"></h5>
+				                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				                    <span aria-hidden="true">&times;</span>
+				                </button>
+				            </div>
+				            <div class="modal-body">
+				                <!-- Display movie details -->
+				                <div class="text-center">
+				                    <img th:src="${movie.image}" class="card-img-top movie-image" alt="Movie Poster">
+				                    <p th:text="${'Rating: ' + movie.calculateAverageRating()}"></p>
+				                    <p th:text="${#dates.format(movie.releaseDate, 'dd MMMM yyyy')}"></p>
+				                    <p th:text="${movie.description}"></p>
+				                </div>
+				                <button type="button" class="btn btn-primary" onclick="location.href='/userLogin'">Post a Review</button>
+				                <!-- Display reviews for the selected movie -->
+				                <h3 class="mt-4">User Reviews</h3>
+				                <div class="list-group">
+				                    <!-- Loop through and display reviews by different users -->
+				                    <div th:each="review : ${movie.reviews}" class="list-group-item user-review">
+				                        <h5 class="mb-1" th:text="${review.user.name}"></h5>
+				                        <p class="mb-1" th:text="'Rating: ' + ${review.rating}"></p>
+				                        <p class="mb-1" th:text="'Review: ' + ${review.comment}"></p>
+				                    </div>
+				                </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+         		
             </div>
         </div>
         <a href="/userLogin" class="btn btn-primary">Click here to login and post a Review</a>
     </div>
+    
     <!-- Include Bootstrap JS and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

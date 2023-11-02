@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 <body>
     <div class="container mt-5">
@@ -25,9 +27,16 @@
                                         <input type="email" class="form-control" id="email" name="email" required th:value="${param.email}">
                                     </div>
                                     <div class="form-group">
-                                        <label for="password">Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" required>
-                                    </div>
+									    <label for="password">Password</label>
+									    <div class="input-group">
+									        <input type="password" class="form-control" id="password" name="password" required>
+									        <div class="input-group-append">
+									            <span class="input-group-text">
+									                <i class="fas fa-eye" id="password-toggle"></i>
+									            </span>
+									        </div>
+									    </div>
+									</div>
                                     <button type="submit" class="btn btn-primary">Login</button>
                                 </form>
                                 <!-- Display error message here if login fails -->
@@ -43,5 +52,23 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <script>
+	    // JavaScript to toggle password visibility with eye/no-eye icons
+	    $(document).ready(function () {
+	        const passwordInput = $('#password');
+	        const passwordToggle = $('#password-toggle');
+	
+	        passwordToggle.click(function () {
+	            if (passwordInput.attr('type') === 'password') {
+	                passwordInput.attr('type', 'text');
+	                passwordToggle.removeClass('fa-eye').addClass('fa-eye-slash');
+	            } else {
+	                passwordInput.attr('type', 'password');
+	                passwordToggle.removeClass('fa-eye-slash').addClass('fa-eye');
+	            }
+	        });
+	    });
+	</script>
 </body>
 </html>
